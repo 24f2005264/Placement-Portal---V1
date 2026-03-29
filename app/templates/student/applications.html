@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}My Applications{% endblock %}
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-2 sidebar py-3 d-none d-md-block">
+        <nav class="nav flex-column px-2">
+            <a class="nav-link" href="{{ url_for('student.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <a class="nav-link active" href="{{ url_for('student.my_applications') }}"><i class="bi bi-file-earmark-text me-2"></i>My Applications</a>
+            <a class="nav-link" href="{{ url_for('student.profile') }}"><i class="bi bi-person me-2"></i>Profile</a>
+        </nav>
+    </div>
+    <div class="col-md-10 py-3">
+        <h4 class="mb-4">My Application History</h4>
+        {% if applications %}
+        <div class="card">
+            <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr><th>#</th><th>Job Title</th><th>Company</th><th>Location</th><th>Applied On</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                {% for a in applications %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ a.drive.job_title }}</td>
+                    <td>{{ a.drive.company.name }}</td>
+                    <td>{{ a.drive.location or '-' }}</td>
+                    <td>{{ a.application_date.strftime('%d %b %Y') }}</td>
+                    <td>
+                        {% if a.status == 'applied' %}<span class="badge bg-primary">Applied</span>
+                        {% elif a.status == 'shortlisted' %}<span class="badge bg-info text-dark">Shortlisted</span>
+                        {% elif a.status == 'selected' %}<span class="badge bg-success">Selected</span>
+                        {% else %}<span class="badge bg-danger">Rejected</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        {% else %}
+            <p class="text-muted">You haven't applied to any drives yet. <a href="{{ url_for('student.dashboard') }}">Browse drives</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
