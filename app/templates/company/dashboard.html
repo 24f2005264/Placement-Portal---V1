@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Company Dashboard{% endblock %}
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-2 sidebar py-3 d-none d-md-block">
+        <nav class="nav flex-column px-2">
+            <a class="nav-link active" href="{{ url_for('company.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <a class="nav-link" href="{{ url_for('company.new_drive') }}"><i class="bi bi-plus-circle me-2"></i>New Drive</a>
+            <a class="nav-link" href="{{ url_for('company.profile') }}"><i class="bi bi-building me-2"></i>Profile</a>
+        </nav>
+    </div>
+    <div class="col-md-10 py-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4>Welcome, {{ current_user.name }}</h4>
+            <a href="{{ url_for('company.new_drive') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-circle me-1"></i>Post New Drive
+            </a>
+        </div>
+
+        <h6 class="text-muted mb-3">Your Placement Drives</h6>
+        {% if drive_data %}
+        <div class="row g-3">
+            {% for item in drive_data %}
+            {% set d = item.drive %}
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-1">{{ d.job_title }}</h6>
+                        {% if d.status == 'approved' %}<span class="badge bg-success">Approved</span>
+                        {% elif d.status == 'pending' %}<span class="badge bg-warning text-dark">Pending</span>
+                        {% elif d.status == 'closed' %}<span class="badge bg-secondary">Closed</span>
+                        {% else %}<span class="badge bg-danger">Rejected</span>{% endif %}
+                    </div>
+                    <div class="text-muted small mb-2">Deadline: {{ d.application_deadline }} &nbsp;|&nbsp; Applicants: {{ item.applicant_count }}</div>
+                    {% if d.location %}<div class="small mb-2"><i class="bi bi-geo-alt me-1"></i>{{ d.location }}</div>{% endif %}
+                    <div class="d-flex gap-2 flex-wrap mt-2">
+                        <a href="{{ url_for('company.drive_applications', did=d.id) }}" class="btn btn-sm btn-outline-primary">View Applications</a>
+                        <a href="{{ url_for('company.edit_drive', did=d.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        {% if d.status != 'closed' %}
+                        <a href="{{ url_for('company.close_drive', did=d.id) }}" class="btn btn-sm btn-outline-warning">Close</a>
+                        {% endif %}
+                        <a href="{{ url_for('company.delete_drive', did=d.id) }}" class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Delete this drive?')">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div class="text-muted">No drives posted yet. <a href="{{ url_for('company.new_drive') }}">Post one now.</a></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
